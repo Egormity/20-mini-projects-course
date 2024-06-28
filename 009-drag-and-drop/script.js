@@ -10,16 +10,16 @@ const completeList = document.getElementById('complete-list');
 const onHoldList = document.getElementById('on-hold-list');
 
 // Items
-
+let updatedOnLoad = false;
 
 // Initialize Arrays
+let listArrays = [];
 let backlogListArray = [];
 let progressListArray = [];
 let completeListArray = [];
 let onHoldListArray = [];
 
 // Drag Functionality
-
 
 // Get Arrays from localStorage if available, set default values if not
 function getSavedColumns() {
@@ -38,10 +38,12 @@ function getSavedColumns() {
 
 // Set localStorage Arrays
 function updateSavedColumns() {
-  localStorage.setItem('backlogItems', JSON.stringify(backlogListArray));
-  localStorage.setItem('progressItems', JSON.stringify(progressListArray));
-  localStorage.setItem('completeItems', JSON.stringify(completeListArray));
-  localStorage.setItem('onHoldItems', JSON.stringify(onHoldListArray));
+  listArrays = [backlogListArray, progressListArray, completeListArray, onHoldListArray];
+  const arrayNames = ['backlog', 'progress', 'complte', 'onHold'];
+
+  arrayNames.forEach((arrayName, i) => {
+    localStorage.setItem(`${arrayName}Items`, JSON.stringify(listArrays[i]));
+  });
 }
 
 // Create DOM Elements for each list item
@@ -53,23 +55,41 @@ function createItemEl(columnEl, column, item, index) {
   // List Item
   const listEl = document.createElement('li');
   listEl.classList.add('drag-item');
-
 }
 
 // Update Columns in DOM - Reset HTML, Filter Array, Update localStorage
 function updateDOM() {
   // Check localStorage once
+  if (!updatedOnLoad) getSavedColumns();
+
+  console.log(backlogListArray);
 
   // Backlog Column
+  backlogList.textContent = '';
+  backlogListArray.forEach((backlogItem, i) => {
+    createItemEl(backlogList, 0, backlogItem, i);
+  });
 
   // Progress Column
+  progressList.textContent = '';
+  progressListArray.forEach((progressItem, i) => {
+    createItemEl(backlog, 1, progressItem, i);
+  });
 
   // Complete Column
+  completeList.textContent = '';
+  completeListArray.forEach((completeItem, i) => {
+    createItemEl(backlogList, 2, completeItem, i);
+  });
 
   // On Hold Column
+  onHoldList.textContent = '';
+  onHoldListArray.forEach((onHoldItem, i) => {
+    createItemEl(backlogList, 3, onHoldItem, i);
+  });
 
   // Run getSavedColumns only once, Update Local Storage
-
-
 }
 
+// On load
+updateDOM();
